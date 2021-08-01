@@ -114,7 +114,6 @@
 				BCFB6A6E5C50578ACEE0234C /* Pods-shoeguard-shoeguardTests.debug.xcconfig */,
 				3F1984FF6AFE8A21E1ADB7B6 /* Pods-shoeguard-shoeguardTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
