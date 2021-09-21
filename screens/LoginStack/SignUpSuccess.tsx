@@ -1,10 +1,14 @@
 import React from 'react';
-import styled from 'styled-components/native';
-import Illust from 'images/signup-success.svg';
-import {hp, wp} from 'styles/size';
-import Button from 'components/Button';
+import {StackActions, useNavigation} from '@react-navigation/core';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from 'styled-components';
+import styled from 'styled-components/native';
+import Button from 'components/Button';
+import {hp, wp} from 'styles/size';
+import Illust from 'images/signup-success.svg';
+
+type NavigationType = NativeStackNavigationProp<LoginStackType>;
 
 interface IStyledButtonProps {
   bottom: number;
@@ -12,9 +16,12 @@ interface IStyledButtonProps {
 
 const SignUpSuccess = () => {
   const theme = useTheme();
+  const navigation = useNavigation<NavigationType>();
   const {bottom} = useSafeAreaInsets();
 
-  const onPressButton = () => {};
+  const onPressButton = () => {
+    navigation.dispatch(StackActions.push('GenerateQRCode'));
+  };
 
   return (
     <Container>
