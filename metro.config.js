@@ -24,6 +24,7 @@ module.exports = (async () => {
         hooks: path.resolve(__dirname, 'hooks'),
         styles: path.resolve(__dirname, 'styles'),
         images: path.resolve(__dirname, 'assets/images'),
+        modules: path.resolve(__dirname, 'modules'),
       },
       assetExts: assetExts.filter(ext => ext !== 'svg'),
       sourceExts: [...sourceExts, 'svg'],
