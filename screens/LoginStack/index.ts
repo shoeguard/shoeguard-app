@@ -1,3 +1,4 @@
+import GenerateQRCode from './GenerateQRCode';
 import NameInput from './NameInput';
 import Onboarding from './Onboarding';
 import PasswordInput from './PasswordInput';
@@ -14,4 +15,5 @@ export {
   PasswordInput,
   NameInput,
   SignUpSuccess,
+  GenerateQRCode,
 };
