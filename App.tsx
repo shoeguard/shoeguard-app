@@ -12,6 +12,7 @@ import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
+  GenerateQRCode,
   NameInput,
   Onboarding,
   PasswordInput,
@@ -38,6 +39,7 @@ const LoginNavigator = () => (
     <LoginStack.Screen name="PasswordInput" component={PasswordInput} />
     <LoginStack.Screen name="NameInput" component={NameInput} />
     <LoginStack.Screen name="SignUpSuccess" component={SignUpSuccess} />
+    <LoginStack.Screen name="GenerateQRCode" component={GenerateQRCode} />
   </LoginStack.Navigator>
 );
 
