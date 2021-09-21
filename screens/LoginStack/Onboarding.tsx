@@ -9,14 +9,29 @@ import Illust03 from 'images/onboarding-03.svg';
 import {hp, wp} from 'styles/size';
 import Oval from 'components/Oval';
 import Button from 'components/Button';
+import {useNavigation} from '@react-navigation/core';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
+type NavigationType = NativeStackNavigationProp<LoginStackType>;
 interface IContainerProps {
   bottom: number;
 }
 
 const Onboarding = () => {
   const theme = useTheme();
+  const navigation = useNavigation<NavigationType>();
   const {bottom} = useSafeAreaInsets();
+
+  const onPressSignIn = () => {
+    navigation.navigate('PhoneInput', {
+      isLogin: true,
+    });
+  };
+
+  const onPressSignUp = () => {
+    navigation.navigate('Terms');
+  };
+
   return (
     <StyledPagerView>
       <Container key="1" bottom={bottom}>
@@ -31,8 +46,14 @@ const Onboarding = () => {
           <StyledOval width={6} color={theme.color.gray} />
           <StyledOval width={6} color={theme.color.gray} />
         </OvalWrapper>
-        <Button color={theme.color.blue} label={'기존 계정으로 시작'} />
-        <TouchableHighlight>
+        <Button
+          color={theme.color.blue}
+          label={'기존 계정으로 시작'}
+          onPress={onPressSignIn}
+        />
+        <TouchableHighlight
+          onPress={onPressSignUp}
+          underlayColor={'transparent'}>
           <TouchableLabel>회원가입</TouchableLabel>
         </TouchableHighlight>
       </Container>
@@ -50,8 +71,14 @@ const Onboarding = () => {
           <StyledOval width={6} color={theme.color.blue} />
           <StyledOval width={6} color={theme.color.gray} />
         </OvalWrapper>
-        <Button color={theme.color.blue} label={'기존 계정으로 시작'} />
-        <TouchableHighlight>
+        <Button
+          color={theme.color.blue}
+          label={'기존 계정으로 시작'}
+          onPress={onPressSignIn}
+        />
+        <TouchableHighlight
+          onPress={onPressSignUp}
+          underlayColor={'transparent'}>
           <TouchableLabel>회원가입</TouchableLabel>
         </TouchableHighlight>
       </Container>
@@ -70,8 +97,14 @@ const Onboarding = () => {
           <StyledOval width={6} color={theme.color.gray} />
           <StyledOval width={6} color={theme.color.blue} />
         </OvalWrapper>
-        <Button color={theme.color.blue} label={'기존 계정으로 시작'} />
-        <TouchableHighlight>
+        <Button
+          color={theme.color.blue}
+          label={'기존 계정으로 시작'}
+          onPress={onPressSignIn}
+        />
+        <TouchableHighlight
+          onPress={onPressSignUp}
+          underlayColor={'transparent'}>
           <TouchableLabel>회원가입</TouchableLabel>
         </TouchableHighlight>
       </Container>
