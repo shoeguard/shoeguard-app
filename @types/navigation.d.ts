@@ -26,6 +26,8 @@ declare global {
       password: string;
     };
     SignUpSuccess: undefined;
+    GenerateQRCode: undefined;
+    ScanQRCode: undefined;
   };
 
   export type MainTabType = {};
