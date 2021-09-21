@@ -11,19 +11,33 @@ import {ThemeProvider} from 'styled-components';
 import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Onboarding} from 'screens/LoginStack';
+import {
+  NameInput,
+  Onboarding,
+  PasswordInput,
+  PhoneInput,
+  SignUpSuccess,
+  SmsAuthenticate,
+  Terms,
+} from 'screens/LoginStack';
 import theme from 'styles/theme';
 
-const RootStack = createNativeStackNavigator();
-const LoginStack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator<RootStackType>();
+const LoginStack = createNativeStackNavigator<LoginStackType>();
 
 const LoginNavigator = () => (
   <LoginStack.Navigator
-    initialRouteName="Onboading"
+    initialRouteName="Onboarding"
     screenOptions={{
       headerShown: false,
     }}>
-    <LoginStack.Screen name="Onboading" component={Onboarding} />
+    <LoginStack.Screen name="Onboarding" component={Onboarding} />
+    <LoginStack.Screen name="Terms" component={Terms} />
+    <LoginStack.Screen name="PhoneInput" component={PhoneInput} />
+    <LoginStack.Screen name="SmsAuthenticate" component={SmsAuthenticate} />
+    <LoginStack.Screen name="PasswordInput" component={PasswordInput} />
+    <LoginStack.Screen name="NameInput" component={NameInput} />
+    <LoginStack.Screen name="SignUpSuccess" component={SignUpSuccess} />
   </LoginStack.Navigator>
 );
 
