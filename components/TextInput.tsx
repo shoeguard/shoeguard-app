@@ -1,7 +1,6 @@
 import React from 'react';
 import {TextInputProps} from 'react-native';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import {hp, wp} from 'styles/size';
 
 const TextInput = (props: TextInputProps) => {
