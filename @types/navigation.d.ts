@@ -3,7 +3,7 @@ export {};
 declare global {
   export type RootStackType = {
     LoginStack: LoginStackType;
-    MainTab: MainTabType;
+    MainTab: MainParentTabType | MainChildTabType;
   };
 
   export type LoginStackType = {
@@ -21,7 +21,6 @@ declare global {
       phoneNumber: string;
     };
     NameInput: {
-      isLogin: boolean;
       phoneNumber: string;
       password: string;
     };
@@ -30,5 +29,44 @@ declare global {
     ScanQRCode: undefined;
   };
 
-  export type MainTabType = {};
+  export type MainParentTabType = {
+    DeviceStack: DeviceParentStackType;
+    ReportStack: ReportParentStackType;
+    HistoryStack: HistoryStackType;
+    MenuStack: MenuStackType;
+  };
+
+  export type MainChildTabType = {
+    DeviceStack: DeviceChildStackType;
+    ReportStack: ReportChildStackType;
+    HistoryStack: HistoryStackType;
+    MenuStack: MenuStackType;
+  };
+
+  export type DeviceParentStackType = {
+    Device: undefined;
+    AddDevice: undefined;
+  };
+
+  export type DeviceChildStackType = {
+    Device: undefined;
+  };
+
+  export type ReportParentStackType = {
+    Report: undefined;
+  };
+
+  export type ReportChildStackType = {
+    Report: undefined;
+    Active: undefined;
+  };
+
+  export type HistoryStackType = {
+    History: undefined;
+    Detail: undefined;
+  };
+
+  export type MenuStackType = {
+    Menu: undefined;
+  };
 }
