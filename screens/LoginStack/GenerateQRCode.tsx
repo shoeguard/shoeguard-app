@@ -1,8 +1,7 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-svg';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import Header from 'components/Header';
 import {hp, wp} from 'styles/size';
 import Button from 'components/Button';

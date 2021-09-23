@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Platform} from 'react-native';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import {
   RouteProp,
   StackActions,
@@ -23,13 +22,13 @@ interface IStyledButtonProps {
   bottom: number;
 }
 
-const PasswordInput = () => {
+const NameInput = () => {
   const [name, setName] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const navigation = useNavigation<NavigationType>();
   const {
-    params: {isLogin, phoneNumber, password},
+    params: {phoneNumber, password},
   } = useRoute<RouteType>();
   const {bottom} = useSafeAreaInsets();
   const theme = useTheme();
@@ -40,10 +39,9 @@ const PasswordInput = () => {
 
   const onPressButton = () => {
     // register api call
-    console.log(isLogin, phoneNumber, password);
+    console.log(phoneNumber, password);
 
-    // navigation dispatch to SignUpSuccess
-    navigation.dispatch(StackActions.push('SignUpSuccess'));
+    navigation.dispatch(StackActions.replace('SignUpSuccess'));
   };
 
   return (
@@ -114,4 +112,4 @@ const StyledButton = styled(Button)<IStyledButtonProps>`
     isInputFocused ? 0 : bottom + hp('2%')}px;
 `;
 
-export default PasswordInput;
+export default NameInput;

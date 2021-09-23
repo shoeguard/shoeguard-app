@@ -1,8 +1,7 @@
 import React from 'react';
 import PagerView from 'react-native-pager-view';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import styled, {useTheme} from 'styled-components/native';
 import Illust01 from 'images/onboarding-01.svg';
 import Illust02 from 'images/onboarding-02.svg';
 import Illust03 from 'images/onboarding-03.svg';

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import {Platform} from 'react-native';
 import {
   RouteProp,

@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Platform} from 'react-native';
-import {useTheme} from 'styled-components';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import {
   RouteProp,
   StackActions,
@@ -39,9 +38,13 @@ const PasswordInput = () => {
   };
 
   const onPressButton = () => {
+    if (isLogin) {
+      navigation.dispatch(StackActions.replace('MainTab'));
+      return;
+    }
+
     navigation.navigate('NameInput', {
       phoneNumber,
-      isLogin,
       password,
     });
   };
