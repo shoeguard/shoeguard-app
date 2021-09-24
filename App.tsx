@@ -10,6 +10,7 @@ import {StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import {ThemeProvider} from 'styled-components';
 import SplashScreen from 'react-native-splash-screen';
+import codePush from 'react-native-code-push';
 import Geolocation, {
   GeolocationConfiguration,
 } from '@react-native-community/geolocation';
@@ -207,9 +208,17 @@ const MenuStackNavigator = () => (
   </MenuStack.Navigator>
 );
 
+const codePushOptions = {
+  installMode: codePush.InstallMode.IMMEDIATE,
+  checkFrequency: codePush.CheckFrequency.MANUAL,
+  mandatoryInstallMode: codePush.InstallMode.ON_NEXT_RESTART,
+};
+
 const App = () => {
   const [isChild, setIsChild] = useState(false);
   useEffect(() => {
+    codePush.sync(codePushOptions);
+    codePush.notifyAppReady();
     const data = {
       id: 0,
       phone_number: 'string',
