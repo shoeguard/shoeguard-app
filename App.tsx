@@ -6,7 +6,7 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {StatusBar} from 'react-native';
+import {PermissionsAndroid, Platform, StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import {ThemeProvider} from 'styled-components';
 import SplashScreen from 'react-native-splash-screen';
@@ -249,8 +249,41 @@ const App = () => {
 
     Geolocation.setRNConfiguration(config);
 
+    requestPermission();
+
     SplashScreen.hide();
   }, []);
+
+  const requestPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const grants = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        ]);
+
+        console.log('write external stroage', grants);
+
+        if (
+          grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.READ_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.RECORD_AUDIO'] ===
+            PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          console.log('Permissions granted');
+        } else {
+          console.log('All required permissions not granted');
+          return;
+        }
+      } catch (err) {
+        console.warn(err);
+        return;
+      }
+    }
+  };
 
   return (
     <Provider store={store}>
