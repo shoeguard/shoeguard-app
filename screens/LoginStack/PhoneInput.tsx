@@ -13,6 +13,7 @@ import Header from 'components/Header';
 import TextInput from 'components/TextInput';
 import Button from 'components/Button';
 import {hp, wp} from 'styles/size';
+import api from 'api';
 
 type NavigationType = NativeStackNavigationProp<LoginStackType>;
 type RouteType = RouteProp<LoginStackType, 'PhoneInput'>;
@@ -37,17 +38,28 @@ const PhoneInput = () => {
     navigation.dispatch(StackActions.pop(1));
   };
 
-  const onPressButton = () => {
+  const onPressButton = async () => {
     const phoneNumberCheck = phoneNumber.match(/^\d{3}-\d{4}-\d{4}$/);
+    const requestPhoneNumber = phoneNumber.replace(/-/g, '');
+
+    console.log('requestPhoneNumber', requestPhoneNumber);
 
     if (phoneNumberCheck) {
-      navigation.navigate('SmsAuthenticate', {
-        phoneNumber: phoneNumber,
-        isLogin: isLogin,
+      const response = await api.post('/phone-verification', {
+        phone_number: requestPhoneNumber,
       });
-    } else {
-      setIsValid(false);
+
+      if (response.status === 201) {
+        navigation.navigate('SmsAuthenticate', {
+          phoneNumber: phoneNumber,
+          isLogin: isLogin,
+        });
+
+        return;
+      }
     }
+
+    setIsValid(false);
   };
 
   return (
@@ -74,6 +86,7 @@ const PhoneInput = () => {
           }
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
+          keyboardType="phone-pad"
         />
 
         {!isValid && (
