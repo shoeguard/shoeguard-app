@@ -37,7 +37,7 @@ const Onboarding = () => {
         <Illust01 />
         <Title>
           우리 아이가{'\n'}
-          안전한 환경에서 자라도록
+          안전한 환경에서 자라도록!
         </Title>
         <Description>수많은 위협으로부터 소중한 자녀를 보호하세요.</Description>
         <OvalWrapper>

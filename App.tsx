@@ -208,17 +208,20 @@ const MenuStackNavigator = () => (
   </MenuStack.Navigator>
 );
 
-const codePushOptions = {
-  installMode: codePush.InstallMode.IMMEDIATE,
-  checkFrequency: codePush.CheckFrequency.MANUAL,
-  mandatoryInstallMode: codePush.InstallMode.ON_NEXT_RESTART,
-};
-
 const App = () => {
   const [isChild, setIsChild] = useState(false);
   useEffect(() => {
-    codePush.sync(codePushOptions);
-    codePush.notifyAppReady();
+    const syncCodePush = async () => {
+      await codePush.sync({
+        installMode: codePush.InstallMode.IMMEDIATE,
+        mandatoryInstallMode: codePush.InstallMode.IMMEDIATE,
+      });
+    };
+
+    syncCodePush();
+  }, []);
+
+  useEffect(() => {
     const data = {
       id: 0,
       phone_number: 'string',
