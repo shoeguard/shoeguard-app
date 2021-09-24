@@ -2,4 +2,5 @@
     <string name="app_name">shoeguard</string>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
     <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">Omu29U7q87ydjzpqIjtABbCJRCN8X-lq-scr5</string>
 </resources>
