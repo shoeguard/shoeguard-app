@@ -6,6 +6,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/core';
 import styled, {useTheme} from 'styled-components/native';
 import Button from 'components/Button';
+import {hp} from 'styles/size';
 
 type NavigationType = NativeStackNavigationProp<LoginStackType>;
 
