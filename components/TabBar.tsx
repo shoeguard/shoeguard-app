@@ -11,6 +11,7 @@ import TabHistoryActiveIcon from 'images/tab-history-active.svg';
 import TabMenuActiveIcon from 'images/tab-menu-active.svg';
 import TabReportActiveIcon from 'images/tab-report-active.svg';
 import {hp, wp} from 'styles/size';
+import {Platform} from 'react-native';
 
 interface IContainerProps {
   height: number;
@@ -52,7 +53,10 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   };
 
   return (
-    <Container height={hp('6.9%') + bottom}>
+    <Container
+      height={
+        Platform.OS === 'android' ? hp('8%') + bottom : hp('6.9%') + bottom
+      }>
       {state.routes.map((route, index) => {
         const {options} = descriptors[route.key];
         const label =
