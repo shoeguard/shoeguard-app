@@ -13,6 +13,8 @@ import Header from 'components/Header';
 import TextInput from 'components/TextInput';
 import Button from 'components/Button';
 import {hp, wp} from 'styles/size';
+import api from 'api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationType = NativeStackNavigationProp<LoginStackType>;
 type RouteType = RouteProp<LoginStackType, 'NameInput'>;
@@ -37,11 +39,40 @@ const NameInput = () => {
     navigation.dispatch(StackActions.pop(1));
   };
 
-  const onPressButton = () => {
-    // register api call
-    console.log(phoneNumber, password);
+  const onPressButton = async () => {
+    const requestPhoneNumber = phoneNumber.replace(/-/g, '');
 
-    navigation.dispatch(StackActions.replace('SignUpSuccess'));
+    const response = await api.post('/users/register', {
+      phone_number: requestPhoneNumber,
+      password,
+      name,
+    });
+
+    if (response.status === 201) {
+      loginAndDispatchNavigation();
+
+      return;
+    }
+
+    setIsValid(false);
+  };
+
+  const loginAndDispatchNavigation = async () => {
+    const requestPhoneNumber = phoneNumber.replace(/-/g, '');
+
+    const response = await api.post('/token', {
+      phone_number: requestPhoneNumber,
+      password,
+    });
+
+    if (response.status === 200) {
+      const {access, refresh} = response.data;
+
+      await AsyncStorage.setItem('access', access);
+      await AsyncStorage.setItem('refresh', refresh);
+
+      navigation.dispatch(StackActions.replace('SignUpSuccess'));
+    }
   };
 
   return (
@@ -64,7 +95,7 @@ const NameInput = () => {
         {!isValid && <ErrorText>유효한 이름이 아닙니다.</ErrorText>}
         <StyledButton
           color={theme.color.blue}
-          label={'다음'}
+          label={'회원가입 완료'}
           onPress={onPressButton}
           isInputFocused={isInputFocused}
           bottom={bottom}

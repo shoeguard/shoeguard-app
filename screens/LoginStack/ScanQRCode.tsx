@@ -1,78 +1,125 @@
-import React from 'react';
+import React, {useRef} from 'react';
+import {StyleSheet} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {BarCodeReadEvent} from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import {RNCamera} from 'react-native-camera';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/core';
-import styled, {useTheme} from 'styled-components/native';
-import Button from 'components/Button';
-import {hp} from 'styles/size';
+import {StackActions, useNavigation} from '@react-navigation/core';
+import styled from 'styled-components/native';
+import {hp, wp} from 'styles/size';
+import api from 'api';
+import {chagneUser} from 'modules/reducer/account';
 
 type NavigationType = NativeStackNavigationProp<LoginStackType>;
 
-interface IStyledButtonProps {
-  bottom: number;
-}
-
 const ScanQRCode = () => {
-  const theme = useTheme();
+  const dispatch = useDispatch();
+  const QRCodeRef = useRef<QRCodeScanner>(null);
   const navigation = useNavigation<NavigationType>();
-  const {bottom} = useSafeAreaInsets();
-  const onSuccess = (e: any) => {
-    console.log(e.data);
+
+  const onSuccess = async (e: BarCodeReadEvent) => {
+    try {
+      const parsedData = JSON.parse(e.data);
+
+      console.log(e.data);
+
+      if ('childId' in parsedData) {
+        const accessToken = await AsyncStorage.getItem('access');
+        console.log(accessToken);
+
+        const response = await api.post(
+          '/users/add-child',
+          {
+            child_id: parsedData.childId,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+
+        if (response.status === 200) {
+          dispatchToMain();
+        }
+      } else {
+        throw new Error('Invalid QR Code');
+      }
+    } catch (error) {
+      QRCodeRef.current?.reactivate();
+      console.log(error);
+    }
   };
 
-  const onPressButton = () => {};
+  const dispatchToMain = async () => {
+    const accessToken = AsyncStorage.getItem('access');
+    const response = await api.get('/users/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status === 200) {
+      dispatch(chagneUser(response.data));
+      navigation.dispatch(StackActions.replace('MainTab'));
+    }
+  };
 
   return (
-    <>
-      <QRCodeScanner
-        onRead={onSuccess}
-        cameraStyle={{
-          flex: 1,
-          width: '100%',
-          height: '100%',
-        }}
-        topViewStyle={{
-          display: 'none',
-        }}
-        bottomViewStyle={{
-          display: 'none',
-        }}
-        // flashMode={RNCamera.Constants.FlashMode.torch}
-        // topContent={
-        //   <Text style={styles.centerText}>
-        //     Go to <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text>{' '}
-        //     on your computer and scan the QR code.
-        //   </Text>
-        // }
-        // bottomContent={
-        //   <TouchableOpacity style={styles.buttonTouchable}>
-        //     <Text style={styles.buttonText}>OK. Got it!</Text>
-        //   </TouchableOpacity>
-        // }
-      />
-      <StyledButton
-        color={theme.color.blue}
-        label={'다음'}
-        onPress={onPressButton}
-        bottom={bottom}
-      />
-    </>
+    <QRCodeScanner
+      ref={QRCodeRef}
+      showMarker={true}
+      onRead={onSuccess}
+      cameraStyle={QRCodeStyle.camera}
+      topViewStyle={QRCodeStyle.topView}
+      bottomViewStyle={QRCodeStyle.bottomView}
+      customMarker={
+        <MarkerWrapper>
+          <MarkerLabel>
+            사각형 정중앙에{'\n'}
+            QR코드를 인식해주세요.
+          </MarkerLabel>
+          <Marker />
+        </MarkerWrapper>
+      }
+    />
   );
 };
 
-const Container = styled.SafeAreaView`
-  flex: 1;
+const QRCodeStyle = StyleSheet.create({
+  camera: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  topView: {
+    display: 'none',
+  },
+  bottomView: {
+    display: 'none',
+  },
+});
+
+const MarkerWrapper = styled.View`
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: ${({theme}) => theme.color.white};
+  background-color: ${({theme}) => theme.color.transparent};
 `;
 
-const StyledButton = styled(Button)<IStyledButtonProps>`
-  position: absolute;
-  bottom: ${({bottom}) => bottom + hp('2%')}px;
+const MarkerLabel = styled.Text`
+  font-size: ${({theme}) => theme.fontSize.md}px;
+  color: ${({theme}) => theme.color.white};
+  font-family: ${({theme}) => theme.fontFamily.bold};
+  text-align: center;
+`;
+const Marker = styled.View`
+  margin-top: ${hp('1.7%')}px;
+  width: ${wp('72.5%')}px;
+  height: ${wp('72.5%')}px;
+  background-color: ${({theme}) => theme.color.transparent};
+  border: ${({theme}) => `4px solid ${theme.color.white}`};
 `;
 
 export default ScanQRCode;

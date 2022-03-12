@@ -3,7 +3,11 @@ export {};
 declare global {
   export type RootStackType = {
     LoginStack: LoginStackType;
+    ConnectDevice: undefined;
     MainTab: MainParentTabType | MainChildTabType;
+    ReportActive: {
+      id: number;
+    };
   };
 
   export type LoginStackType = {
@@ -58,15 +62,17 @@ declare global {
 
   export type ReportChildStackType = {
     Report: undefined;
-    Active: undefined;
   };
 
   export type HistoryStackType = {
     History: undefined;
-    Detail: undefined;
+    Detail: {
+      id: number;
+    };
   };
 
   export type MenuStackType = {
     Menu: undefined;
+    OSS: undefined;
   };
 }

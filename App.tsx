@@ -5,15 +5,16 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {PermissionsAndroid, Platform, StatusBar} from 'react-native';
-import {Provider} from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 import {ThemeProvider} from 'styled-components';
 import SplashScreen from 'react-native-splash-screen';
 import codePush from 'react-native-code-push';
 import Geolocation, {
   GeolocationConfiguration,
 } from '@react-native-community/geolocation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -30,11 +31,15 @@ import {
 } from 'screens/LoginStack';
 import theme from 'styles/theme';
 import {DeviceChild, DeviceParent, AddDeviceParent} from 'screens/DeviceTab';
-import store from 'modules/store';
-import {ReportActiveChild, ReportChild, ReportParent} from 'screens/ReportTab';
+import ConnectDevice from 'screens/ConnectDevice';
+import ReportActive from 'screens/ReportActive';
+import {ReportChild, ReportParent} from 'screens/ReportTab';
 import {History, HistoryDetail} from 'screens/HistoryTab';
-import {Menu} from 'screens/MenuTab';
+import {Menu, OSS} from 'screens/MenuTab';
 import TabBar from 'components/TabBar';
+import store, {RootState} from 'modules/store';
+import {chagneUser} from 'modules/reducer/account';
+import api from 'api';
 
 const RootStack = createNativeStackNavigator<RootStackType>();
 const LoginStack = createNativeStackNavigator<LoginStackType>();
@@ -183,7 +188,6 @@ const ReportChildNavigator = () => (
       headerShown: false,
     }}>
     <ReportChildStack.Screen name="Report" component={ReportChild} />
-    <ReportChildStack.Screen name="Active" component={ReportActiveChild} />
   </ReportChildStack.Navigator>
 );
 
@@ -205,11 +209,16 @@ const MenuStackNavigator = () => (
       headerShown: false,
     }}>
     <MenuStack.Screen name="Menu" component={Menu} />
+    <MenuStack.Screen name="OSS" component={OSS} />
   </MenuStack.Navigator>
 );
 
-const App = () => {
-  const [isChild, setIsChild] = useState(false);
+const StateFulApp = () => {
+  const [isChild, setIsChild] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
+  const dispatch = useDispatch();
+  const {user} = useSelector((state: RootState) => state.account);
+
   useEffect(() => {
     const syncCodePush = async () => {
       await codePush.sync({
@@ -222,29 +231,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const data = {
-      id: 0,
-      phone_number: 'string',
-      name: 'string',
-      is_child: true,
-      parent: {
-        id: 0,
-        phone_number: 'string',
-        name: 'string',
-        is_child: false,
-      },
-      children: [
-        {
-          id: 0,
-          phone_number: 'string;',
-          name: 'string;',
-          is_child: true,
-        },
-      ],
-    };
-
-    setIsChild(data.is_child);
-
     const config: GeolocationConfiguration = {
       skipPermissionRequests: false,
       authorizationLevel: 'always',
@@ -254,8 +240,42 @@ const App = () => {
 
     requestPermission();
 
+    dispatchUserInfo();
+
     SplashScreen.hide();
   }, []);
+
+  const dispatchUserInfo = async () => {
+    const accessToken = await AsyncStorage.getItem('access');
+
+    if (accessToken) {
+      setIsLogin(true);
+
+      const response = await api.get('/users/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const {data} = response;
+
+        dispatch(chagneUser(data));
+
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  useEffect(() => {
+    if (user) {
+      if (user.child === null) {
+        setIsChild(false);
+      }
+    }
+  }, [user]);
 
   const requestPermission = async () => {
     if (Platform.OS === 'android') {
@@ -264,18 +284,28 @@ const App = () => {
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.CAMERA,
         ]);
 
         console.log('write external stroage', grants);
 
-        if (
+        const hasGranted =
           grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
             PermissionsAndroid.RESULTS.GRANTED &&
           grants['android.permission.READ_EXTERNAL_STORAGE'] ===
             PermissionsAndroid.RESULTS.GRANTED &&
           grants['android.permission.RECORD_AUDIO'] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        ) {
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.ACCESS_FINE_LOCATION'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.ACCESS_COARSE_LOCATION'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.CAMERA'] ===
+            PermissionsAndroid.RESULTS.GRANTED;
+
+        if (hasGranted) {
           console.log('Permissions granted');
         } else {
           console.log('All required permissions not granted');
@@ -289,26 +319,36 @@ const App = () => {
   };
 
   return (
+    <>
+      <StatusBar
+        barStyle={Platform.OS === 'android' ? 'light-content' : 'dark-content'}
+      />
+      <NavigationContainer>
+        <RootStack.Navigator
+          initialRouteName={isLogin ? 'MainTab' : 'LoginStack'}
+          // initialRouteName={'MainTab'}
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <RootStack.Screen name="LoginStack" component={LoginNavigator} />
+          <RootStack.Screen name="ConnectDevice" component={ConnectDevice} />
+          <RootStack.Screen name="ReportActive" component={ReportActive} />
+          {isChild ? (
+            <RootStack.Screen name="MainTab" component={MainChildNavigator} />
+          ) : (
+            <RootStack.Screen name="MainTab" component={MainParentNavigator} />
+          )}
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </>
+  );
+};
+
+const App = () => {
+  return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <StatusBar barStyle={'dark-content'} />
-        <NavigationContainer>
-          <RootStack.Navigator
-            initialRouteName="LoginStack"
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <RootStack.Screen name="LoginStack" component={LoginNavigator} />
-            {isChild ? (
-              <RootStack.Screen name="MainTab" component={MainChildNavigator} />
-            ) : (
-              <RootStack.Screen
-                name="MainTab"
-                component={MainParentNavigator}
-              />
-            )}
-          </RootStack.Navigator>
-        </NavigationContainer>
+        <StateFulApp />
       </ThemeProvider>
     </Provider>
   );

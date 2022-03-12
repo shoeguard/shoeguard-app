@@ -13,6 +13,8 @@ import Header from 'components/Header';
 import TextInput from 'components/TextInput';
 import Button from 'components/Button';
 import {hp, wp} from 'styles/size';
+import api from 'api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationType = NativeStackNavigationProp<LoginStackType>;
 type RouteType = RouteProp<LoginStackType, 'PasswordInput'>;
@@ -37,9 +39,25 @@ const PasswordInput = () => {
     navigation.dispatch(StackActions.pop(1));
   };
 
-  const onPressButton = () => {
+  const onPressButton = async () => {
     if (isLogin) {
-      navigation.dispatch(StackActions.replace('MainTab'));
+      try {
+        const requestPhoneNumber = phoneNumber.replace(/-/g, '');
+
+        const response = await api.post('/token', {
+          phone_number: requestPhoneNumber,
+          password: password,
+        });
+
+        if (response.status === 200) {
+          AsyncStorage.setItem('access', response.data.access);
+          AsyncStorage.setItem('refresh', response.data.refresh);
+          navigation.dispatch(StackActions.replace('MainTab'));
+        }
+      } catch (error) {
+        setIsValid(false);
+      }
+
       return;
     }
 
@@ -75,7 +93,7 @@ const PasswordInput = () => {
         )}
         <StyledButton
           color={theme.color.blue}
-          label={'다음'}
+          label={isLogin ? '로그인' : '다음'}
           onPress={onPressButton}
           isInputFocused={isInputFocused}
           bottom={bottom}

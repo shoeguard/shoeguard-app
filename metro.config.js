@@ -23,6 +23,7 @@ module.exports = (async () => {
         api: path.resolve(__dirname, 'api'),
         hooks: path.resolve(__dirname, 'hooks'),
         styles: path.resolve(__dirname, 'styles'),
+        assets: path.resolve(__dirname, 'assets'),
         images: path.resolve(__dirname, 'assets/images'),
         modules: path.resolve(__dirname, 'modules'),
       },

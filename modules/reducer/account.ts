@@ -10,15 +10,13 @@ type UserType = {
     phone_number: string;
     name: string;
     is_child: boolean;
-  };
-  children: [
-    {
-      id: number;
-      phone_number: string;
-      name: string;
-      is_child: boolean;
-    },
-  ];
+  } | null;
+  children: {
+    id: number;
+    phone_number: string;
+    name: string;
+    is_child: boolean;
+  } | null;
 } | null;
 
 export const chagneUser = (user: UserType) => ({

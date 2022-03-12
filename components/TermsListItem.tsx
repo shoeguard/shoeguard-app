@@ -41,7 +41,7 @@ const ListTitle = styled.View`
   justify-content: space-between;
   height: ${hp('5.9%')}px;
   width: ${wp('89.3%')}px;
-  padding: 0px ${wp('6.4%')}px 0px ${wp('4.3%')}px;
+  // padding: 0px ${wp('4.4%')}px 0px ${wp('4.3%')}px;
 `;
 
 const ListTitleLabel = styled.Text`

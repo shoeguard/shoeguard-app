@@ -1,7 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import MapView, {EventUserLocation} from 'react-native-maps';
 import Modal from 'react-native-modal';
-import {useSelector, useDispatch} from 'react-redux';
+import Geolocation, {
+  GeolocationConfiguration,
+  GeolocationResponse,
+} from '@react-native-community/geolocation';
 import styled from 'styled-components/native';
 import {height, hp, width, wp} from 'styles/size';
 import {RootState} from 'modules/store';
@@ -18,20 +22,32 @@ const Child = () => {
     (state: RootState) => state.location.location.coords,
   );
 
-  const setLocation = ({nativeEvent: {coordinate}}: EventUserLocation) => {
-    const info = {
-      coords: {
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude,
-        altitude: coordinate.altitude,
-        accuracy: coordinate.accuracy,
-        altitudeAccuracy: coordinate.accuracy,
-        heading: coordinate.heading,
-        speed: coordinate.speed,
-      },
-      timestamp: coordinate.timestamp,
+  useEffect(() => {
+    const config: GeolocationConfiguration = {
+      skipPermissionRequests: false,
+      authorizationLevel: 'always',
     };
-    dispatch(changeLocation(info));
+
+    Geolocation.setRNConfiguration(config);
+
+    const watchId = Geolocation.watchPosition(
+      position => {
+        setLocation(position);
+      },
+      err => {
+        console.error(err);
+      },
+      {
+        enableHighAccuracy: false,
+      },
+    );
+
+    return Geolocation.clearWatch(watchId);
+  }, []);
+
+  const setLocation = (position: GeolocationResponse) => {
+    console.log(position);
+    dispatch(changeLocation(position));
   };
 
   const onPressModalButton = () => {
@@ -41,9 +57,9 @@ const Child = () => {
   return (
     <Container>
       <StyledMapView
-        showsUserLocation
-        followsUserLocation
-        onUserLocationChange={event => setLocation(event)}
+        showsUserLocation={true}
+        followsUserLocation={true}
+        // onUserLocationChange={event => setLocation(event)}
         initialRegion={{
           latitude: coords.latitude,
           longitude: coords.longitude,

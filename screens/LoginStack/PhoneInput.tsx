@@ -45,6 +45,13 @@ const PhoneInput = () => {
     console.log('requestPhoneNumber', requestPhoneNumber);
 
     if (phoneNumberCheck) {
+      if (isLogin) {
+        navigation.navigate('PasswordInput', {
+          phoneNumber: phoneNumber,
+          isLogin: isLogin,
+        });
+        return;
+      }
       const response = await api.post('/phone-verification', {
         phone_number: requestPhoneNumber,
       });
